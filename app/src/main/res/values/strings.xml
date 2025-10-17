@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">CampusExpense</string>
+    
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    
+    <string name="login_title">Welcome to Campus Expense</string>
+    <string name="login_subtitle">Login to manage your expenses</string>
+    <string name="register_title">Create Account</string>
+    <string name="register_subtitle">Start managing your expenses</string>
+    
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="sign_up_here">Sign up</string>
+    <string name="sign_in_here">Sign in</string>
+    
+    <string name="error_empty_username">Please enter username</string>
+    <string name="error_empty_password">Please enter password</string>
+    <string name="error_password_length">Password must be at least 6 characters</string>
+    <string name="error_password_mismatch">Passwords do not match</string>
+    <string name="error_username_exists">Username already exists</string>
+    <string name="error_invalid_credentials">Invalid username or password</string>
+    
+    <string name="login_success">Login successful!</string>
+    <string name="register_success">Registration successful!</string>
+    
+    <string name="welcome">Welcome</string>
+    <string name="logout">Logout</string>
+    <string name="logged_in_message">You are successfully logged in</string>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CampusExpense</string>
+    <string name="login">Đăng nhập</string>
+    <string name="register">Đăng kí</string>
+</resources>
