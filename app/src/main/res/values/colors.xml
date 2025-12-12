@@ -20,4 +20,8 @@
     
     <color name="divider">#E5E7EB</color>
     <color name="overlay">#80000000</color>
+    <color name="grey_text">#808080</color>           <!-- Màu xám cho chữ phụ -->
+    <color name="icon_color">#673AB7</color>          <!-- Màu tím cho icon (ví dụ: bút sửa) -->
+    <color name="delete_icon_color">#F44336</color>  <!-- Màu đỏ cho icon xóa -->
+    <color name="progress_bar_color">#4CAF50</color>  <!-- Màu xanh lá cho thanh tiến trình -->
 </resources>

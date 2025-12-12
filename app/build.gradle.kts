@@ -38,9 +38,11 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.cardview)
+
     implementation(libs.room.runtime)
-    implementation(libs.room.dcomiler)
-    implementation(libs.lifecycle.viemodel)
+    annotationProcessor(libs.room.compiler)
+
+    implementation(libs.lifecycle.viewmodel)
     implementation(libs.lifecycle.livedata)
 
 

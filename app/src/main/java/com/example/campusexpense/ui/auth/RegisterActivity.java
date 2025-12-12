@@ -1,72 +1,60 @@
 package com.example.campusexpense.ui.auth;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
-import com.example.campusexpense.MainActivity;
 import com.example.campusexpense.R;
 import com.example.campusexpense.data.database.AppDatabase;
 import com.example.campusexpense.data.database.UserDao;
 import com.example.campusexpense.data.model.User;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.security.MessageDigest;
 
-public class LoginActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
+    private TextView loginText;
     private TextInputLayout usernameLayout;
     private TextInputLayout passwordLayout;
+    private TextInputLayout confirmPasswordLayout;
     private TextInputEditText usernameInput;
     private TextInputEditText passwordInput;
-    private Button loginButton;
-    private TextView registerText;
+    private TextInputEditText confirmPasswordInput;
+    private Button registerButton;
     private UserDao userDao;
 
-    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
 
-        registerText = findViewById(R.id.registerText);
-        registerText.setOnClickListener(v -> {
-            startActivity(new Intent(this, RegisterActivity.class));
-        });
         usernameLayout = findViewById(R.id.usernameLayout);
         passwordLayout = findViewById(R.id.passwordLayout);
+        confirmPasswordLayout = findViewById(R.id.confirmPasswordLayout);
         usernameInput = findViewById(R.id.usernameInput);
         passwordInput = findViewById(R.id.passwordInput);
-        loginButton = findViewById(R.id.loginButton);
+        confirmPasswordInput = findViewById(R.id.irmPasswordInput);
+        registerButton = findViewById(R.id.registerButton);
+
+        loginText = findViewById(R.id.loginText);
+        loginText.setOnClickListener(v -> finish());
 
         AppDatabase database = AppDatabase.getInstance(this);
         userDao = database.userDao();
-        sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
-        loginButton.setOnClickListener(v -> login());
-        if (isLoggedIn()) {
-            goToMainActivity();
-            return;
-        }
+        registerButton.setOnClickListener(v -> register());
 
     }
-
-    private boolean isLoggedIn() {
-        return sharedPreferences.getBoolean("isLoggedIn", false);
-    }
-
-    private void goToMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
-
     private String hashPassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -83,11 +71,15 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void login() {
-        String username = usernameInput.getText().toString().trim();
+    private void register() {
+        String username = usernameInput.getText().toString();
         String password = passwordInput.getText().toString();
+        String confirmPassword = confirmPasswordInput.getText().toString();
+
         usernameLayout.setError(null);
         passwordLayout.setError(null);
+        confirmPasswordLayout.setError(null);
+
         if (username.isEmpty()) {
             usernameLayout.setError(getString(R.string.error_empty_username));
             return;
@@ -96,24 +88,33 @@ public class LoginActivity extends AppCompatActivity {
             passwordLayout.setError(getString(R.string.error_empty_password));
             return;
         }
-        loginButton.setEnabled(false);
-        loginButton.setText("Logging in...");
+        if (!password.equals(confirmPassword)) {
+            confirmPasswordLayout.setError(getString(R.string.error_password_mismatch));
+            return;
+        }
+        registerButton.setEnabled(false);
+        registerButton.setText("Registering...");
         new Thread(() -> {
+            int count = userDao.checkUsernameExists(username);
+            if (count > 0) {
+                runOnUiThread(() -> {
+                    registerButton.setEnabled(true);
+                    registerButton.setText(R.string.register);
+                    usernameLayout.setError(getString(R.string.error_username_exists));
+                });
+                return;
+            }
             String hashedPassword = hashPassword(password);
-            User user = userDao.login(username, hashedPassword);
+            User user = new User(username, hashedPassword);
+            long result = userDao.insert(user);
             runOnUiThread(() -> {
-                loginButton.setEnabled(true);
-                loginButton.setText(R.string.login);
-                if (user != null) {
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putBoolean("isLoggedIn", true);
-                    editor.putInt("userId", user.getId());
-                    editor.putString("username", user.getUsername());
-                    editor.apply();
-                    Toast.makeText(this, R.string.login_success, Toast.LENGTH_SHORT).show();
-                    goToMainActivity();
+                registerButton.setEnabled(true);
+                registerButton.setText(R.string.register);
+                if (result > 0) {
+                    Toast.makeText(this, R.string.register_success, Toast.LENGTH_SHORT).show();
+                    finish();
                 } else {
-                    passwordLayout.setError(getString(R.string.error_invalid_credentials));
+                    Toast.makeText(this, R.string.register_failed, Toast.LENGTH_SHORT).show();
                 }
             });
         }).start();
